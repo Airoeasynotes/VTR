@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Water Bill Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-500 to-orange-400 min-h-screen flex items-center justify-center font-sans text-gray-800">
+
+  <!-- Bill Generator Container -->
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">VTR Drinking Water Bill</h2>
+
+    <!-- Form to Generate Bill -->
+    <form id="billForm" class="space-y-6">
+      <!-- Hostel Selector -->
+      <div>
+        <label for="hostelName" class="block text-sm font-medium text-gray-700">Customer Name</label>
+        <select
+          id="hostelName"
+          name="hostelName"
+          class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+          required
+        >
+          <option value="" disabled selected>Select a Customer</option>
+          <option value="Sri Laxmi Balaji">Sri Laxmi Balaji</option>
+          <option value="KMR Deluxe">KMR Deluxe</option>
+          <option value="Honey">Honey</option>
+          <option value="Gangotri">Gangotri</option>
+          <option value="Nest Inn">Nest Inn</option>
+          <!-- Add more customers as needed -->
+        </select>
+      </div>
+
+      <!-- Price per Bottle -->
+      <div>
+        <label for="price" class="block text-sm font-medium text-gray-700">Price per Bottle (₹)</label>
+        <input
+          type="number"
+          id="price"
+          name="price"
+          class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+          placeholder="Enter price per bottle"
+          min="1"
+          required
+        />
+      </div>
+
+      <!-- Generate Button -->
+      <button
+        type="button"
+        id="generateBill"
+        class="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 rounded-md shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-orange-400"
+      >
+        Generate Bill
+      </button>
+    </form>
+
+    <!-- Bill Display Section -->
+    <div id="billSection" class="hidden mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+      <h3 class="text-lg font-bold mb-4 text-gray-700">Water Bill</h3>
+      <ul class="space-y-2">
+        <li><strong>Date:</strong> <span id="billDate"></span></li>
+        <li><strong>Customer Name:</strong> <span id="billCustomer"></span></li>
+        <li><strong>Provider Name:</strong> Suresh</li>
+        <li><strong>No. of Bottles:</strong> <span id="billBottles"></span></li>
+        <li><strong>Rate per Bottle:</strong> ₹<span id="billRate"></span></li>
+        <li><strong>Total Amount:</strong> ₹<span id="billTotal"></span></li>
+      </ul>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden mt-6 p-3 bg-red-100 text-red-800 rounded-md text-center">
+      Error: Unable to generate bill. Please check your input or try again.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("generateBill").addEventListener("click", function () {
+      // Get user inputs
+      const hostelName = document.getElementById("hostelName").value;
+      const pricePerBottle = parseFloat(document.getElementById("price").value);
+
+      // Validation
+      if (!hostelName || !pricePerBottle || pricePerBottle <= 0) {
+        alert("Please fill out all fields with valid data.");
+        return;
+      }
+
+      // Reset previous messages
+      const billSection = document.getElementById("billSection");
+      const errorMessage = document.getElementById("errorMessage");
+      billSection.classList.add("hidden");
+      errorMessage.classList.add("hidden");
+
+      try {
+        // Fetch data from localStorage
+        const savedData = JSON.parse(localStorage.getItem("hostelSales")) || [];
+
+        // Find data for the selected hostel
+        const customerData = savedData.find(item => item.hostelName === hostelName);
+
+        if (customerData) {
+          // Populate bill details
+          document.getElementById("billDate").textContent = new Date().toISOString().split("T")[0];
+          document.getElementById("billCustomer").textContent = hostelName;
+          document.getElementById("billBottles").textContent = customerData.bottles;
+          document.getElementById("billRate").textContent = pricePerBottle.toFixed(2);
+          document.getElementById("billTotal").textContent = (customerData.bottles * pricePerBottle).toFixed(2);
+
+          billSection.classList.remove("hidden");
+        } else {
+          throw new Error("Customer not found in the records.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        errorMessage.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

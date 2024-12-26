@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Dashboard</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-600 via-orange-500 to-yellow-400 text-white font-sans">
+
+  <!-- Dashboard Header -->
+  <header class="text-center py-6 bg-white bg-opacity-10 shadow-md">
+    <h1 class="text-3xl font-extrabold text-white">VTR Drinking Water</h1>
+  </header>
+
+  <!-- Metrics Section -->
+  <main class="p-6 grid grid-cols-2 sm:grid-cols-2 gap-6">
+    <!-- Total Bottles Delivered -->
+    <div id="bottlesDeliveredCard" class="bg-white bg-opacity-20 shadow-lg rounded-lg border border-white flex flex-col justify-between p-6 aspect-square">
+      <h2 class="text-lg font-medium text-white">Total Bottles Delivered</h2>
+      <p class="text-3xl font-extrabold text-yellow-200" id="bottlesDelivered">Loading...</p>
+      <div class="mt-4 flex items-center">
+        <span class="text-yellow-200 material-icons text-4xl">local_drink</span>
+        <p class="ml-3 text-sm text-white opacity-80">Updated Today</p>
+      </div>
+    </div>
+
+    <!-- Total Trips -->
+    <div id="tripsCard" class="bg-white bg-opacity-20 shadow-lg rounded-lg border border-white flex flex-col justify-between p-6 aspect-square">
+      <h2 class="text-lg font-medium text-white">Total Trips</h2>
+      <p class="text-3xl font-extrabold text-green-200" id="trips">Loading...</p>
+      <div class="mt-4 flex items-center">
+        <span class="text-green-200 material-icons text-4xl">directions_bus</span>
+        <p class="ml-3 text-sm text-white opacity-80">trips Overview</p>
+      </div>
+    </div>
+
+    <!-- Bottles Returned -->
+    <div id="bottlesReturnedCard" class="bg-white bg-opacity-20 shadow-lg rounded-lg border border-white flex flex-col justify-between p-6 aspect-square">
+      <h2 class="text-lg font-medium text-white">Bottles </h2>
+      <p class="text-3xl font-extrabold text-purple-200" id="bottlesReturned">Loading...</p>
+      <div class="mt-4 flex items-center">
+        <span class="text-purple-200 material-icons text-4xl">store</span>
+        <p class="ml-3 text-sm text-white opacity-80">bottles Report</p>
+      </div>
+    </div>
+
+    <!-- Total Diesel Cost -->
+    <div id="dieselCostCard" class="bg-white bg-opacity-20 shadow-lg rounded-lg border border-white flex flex-col justify-between p-6 aspect-square">
+      <h2 class="text-lg font-medium text-white">Total Diesel Cost</h2>
+      <p class="text-3xl font-extrabold text-red-200" id="dieselCost">Loading...</p>
+      <div class="mt-4 flex items-center">
+        <span class="text-red-200 material-icons text-4xl">local_gas_station</span>
+        <p class="ml-3 text-sm text-white opacity-80">diesel Expense</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-md">
+    <div class="flex justify-around py-3">
+      <a href="home.html" class="flex flex-col items-center text-white hover:text-gray-200 transition">
+        <span class="material-icons text-2xl">dashboard</span>
+        <span class="text-sm mt-1">Dashboard</span>
+      </a>
+      <a href="mainenter.html" class="flex flex-col items-center text-white hover:text-gray-200 transition">
+        <span class="material-icons text-2xl">edit</span>
+        <span class="text-sm mt-1">Entry Sales</span>
+      </a>
+      <a href="view_sales.html" class="flex flex-col items-center text-white hover:text-gray-200 transition">
+        <span class="material-icons text-2xl">visibility</span>
+        <span class="text-sm mt-1">View Sales</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Fetch Data and Populate Dashboard -->
+  <script>
+    function fetchFromLocalStorage() {
+      // Retrieve data from local storage
+      const hostelData = JSON.parse(localStorage.getItem("hostelSales")) || [];
+      const tripData = JSON.parse(localStorage.getItem("tripData")) || [];
+      const spendingsData = JSON.parse(localStorage.getItem("spendingsData")) || [];
+
+      // Calculate total bottles delivered
+      const totalBottles = hostelData.reduce((sum, item) => sum + item.bottles, 0);
+
+      // Calculate total premium and normal trips
+      let premiumTrips = 0, normalTrips = 0;
+      tripData.forEach(item => {
+        if (item.type === "premium") {
+          premiumTrips += item.count;
+        } else if (item.type === "normal") {
+          normalTrips += item.count;
+        }
+      });
+
+      // Calculate total diesel cost
+      const totalDieselCost = spendingsData.filter(item => item.type === "diesel")
+                                             .reduce((sum, item) => sum + item.cost, 0);
+
+      // Populate the dashboard
+      document.getElementById("bottlesDelivered").textContent = totalBottles;
+      document.getElementById("trips").textContent = `${normalTrips} bottles, ${premiumTrips} trips`;
+      document.getElementById("bottlesReturned").textContent = hostelData.reduce((sum, item) => sum + item.returned, 0);
+      document.getElementById("dieselCost").textContent = `₹${totalDieselCost}`;
+    }
+
+    // Call function on page load
+    fetchFromLocalStorage();
+  </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-600 via-orange-500 to-yellow-400 text-white font-sans">
+
+  <!-- Page Header -->
+  <header class="text-center py-6 bg-white bg-opacity-10 shadow-md">
+    <h1 class="text-3xl font-extrabold text-white">Manage Data</h1>
+  </header>
+
+  <!-- Data Management Section -->
+  <main class="p-6 flex flex-col items-center">
+    <div class="bg-white bg-opacity-20 shadow-lg rounded-lg border border-white w-full max-w-lg p-6 space-y-6">
+
+      <!-- Data Display -->
+      <h2 class="text-lg font-medium text-white">Current Data</h2>
+      <pre id="dataDisplay" class="bg-gray-800 p-4 rounded-md text-white w-full overflow-auto">Loading data...</pre>
+
+      <!-- Buttons for Actions -->
+      <div class="flex justify-between space-x-4">
+        <!-- Export Button -->
+        <button id="exportButton" class="w-1/3 bg-blue-500 py-2 rounded-md text-white hover:bg-blue-400">
+          Export Data
+        </button>
+        
+        <!-- Import Button -->
+        <label for="importFile" class="w-1/3 bg-green-500 py-2 rounded-md text-white hover:bg-green-400 cursor-pointer">
+          Import Data
+          <input type="file" id="importFile" class="hidden" accept=".json"/>
+        </label>
+        
+        <!-- Delete Button -->
+        <button id="deleteButton" class="w-1/3 bg-red-500 py-2 rounded-md text-white hover:bg-red-400">
+          Delete Data
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Fetch and display data from localStorage
+    function fetchData() {
+      const hostelData = JSON.parse(localStorage.getItem("hostelSales")) || [];
+      const tripData = JSON.parse(localStorage.getItem("tripData")) || [];
+      const spendingsData = JSON.parse(localStorage.getItem("spendingsData")) || [];
+
+      const displayData = {
+        hostelSales: hostelData,
+        tripData: tripData,
+        spendingsData: spendingsData
+      };
+
+      document.getElementById("dataDisplay").textContent = JSON.stringify(displayData, null, 2);
+    }
+
+    // Export data to a JSON file
+    document.getElementById("exportButton").addEventListener("click", function() {
+      const hostelData = JSON.parse(localStorage.getItem("hostelSales")) || [];
+      const tripData = JSON.parse(localStorage.getItem("tripData")) || [];
+      const spendingsData = JSON.parse(localStorage.getItem("spendingsData")) || [];
+
+      const data = {
+        hostelSales: hostelData,
+        tripData: tripData,
+        spendingsData: spendingsData
+      };
+
+      const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "data.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Import data from a JSON file
+    document.getElementById("importFile").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const data = JSON.parse(e.target.result);
+          
+          // Save data in localStorage under respective categories
+          localStorage.setItem("hostelSales", JSON.stringify(data.hostelSales || []));
+          localStorage.setItem("tripData", JSON.stringify(data.tripData || []));
+          localStorage.setItem("spendingsData", JSON.stringify(data.spendingsData || []));
+
+          alert("Data Imported Successfully!");
+          fetchData();
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    // Delete all data from localStorage
+    document.getElementById("deleteButton").addEventListener("click", function() {
+      if (confirm("Are you sure you want to delete all data? This action cannot be undone.")) {
+        localStorage.removeItem("hostelSales");
+        localStorage.removeItem("tripData");
+        localStorage.removeItem("spendingsData");
+
+        alert("All data has been deleted.");
+        fetchData();
+      }
+    });
+
+    // Initial fetch and display of data
+    fetchData();
+  </script>
+
+</body>
+</html>

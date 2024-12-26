@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Hostel Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-500 to-orange-400 min-h-screen flex items-center justify-center font-sans text-gray-800">
+
+  <!-- Form Container -->
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">View spendings data</h2>
+
+    <!-- Form for Selecting Hostel -->
+    <form id="viewForm" class="space-y-6">
+      <!-- Hostel Selector -->
+      <div>
+        <label for="spendings" class="block text-sm font-medium text-gray-700">Spendings type</label>
+        <select
+          id="spendings"
+          name="spendings"
+          class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+          required
+        >
+          <option value="" disabled selected>Select a spendings type</option>
+          <option value="diesel">Diesel</option>
+          <option value="bottles">Bottles</option>
+          <option value="others">Others</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="button"
+        id="viewButton"
+        class="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 rounded-md shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-orange-400"
+      >
+        View Data
+      </button>
+    </form>
+
+    <!-- Data Display Section -->
+    <div id="dataSection" class="hidden mt-6">
+      <h3 class="text-lg font-bold mb-2 text-gray-700">Data for <span id="selectedSpendings" class="text-orange-500"></span></h3>
+      <ul id="dataList" class="list-disc list-inside bg-gray-50 p-4 rounded-md shadow-sm"></ul>
+      <p id="totalCount" class="mt-3 font-semibold text-gray-700"></p>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden mt-6 p-3 bg-red-100 text-red-800 rounded-md text-center">
+      No data found for the selected spendings type.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("viewButton").addEventListener("click", function () {
+      // Get selected spendings type
+      const spendings = document.getElementById("spendings").value;
+
+      if (!spendings) {
+        alert("Please select a spendings type.");
+        return;
+      }
+
+      // Retrieve data from localStorage
+      const savedData = JSON.parse(localStorage.getItem("spendingsData")) || [];
+
+      // Filter data for the selected spendings type
+      const filteredData = savedData.filter(item => item.spendings === spendings);
+
+      const dataSection = document.getElementById("dataSection");
+      const errorMessage = document.getElementById("errorMessage");
+      const dataList = document.getElementById("dataList");
+      const selectedSpendings = document.getElementById("selectedSpendings");
+      const totalCount = document.getElementById("totalCount");
+
+      dataSection.classList.add("hidden");
+      errorMessage.classList.add("hidden");
+      dataList.innerHTML = "";
+
+      if (filteredData.length > 0) {
+        selectedSpendings.textContent = spendings;
+
+        // Populate data in the list
+        let totalCost = 0;
+        filteredData.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = `Date: ${item.date}, Cost: ${item.cost}`;
+          dataList.appendChild(li);
+          totalCost += item.cost;
+        });
+
+        totalCount.textContent = `Total Cost: ${totalCost}`;
+        dataSection.classList.remove("hidden");
+      } else {
+        errorMessage.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Sales</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-500 to-orange-400 min-h-screen flex items-center justify-center font-sans text-gray-800">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+    <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Schools and Colleges</h1>
+
+    <form id="dataForm" class="space-y-6">
+      <!-- Date Selector -->
+      <div>
+        <label for="date" class="block text-sm font-semibold text-gray-700">Date</label>
+        <input
+          type="date"
+          id="date"
+          name="date"
+          class="mt-2 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-orange-400 focus:outline-none text-gray-800 shadow-sm"
+          required
+        />
+      </div>
+
+      <!-- School/College Name Selector -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700">Schools and Colleges</label>
+        <div class="flex items-center justify-between mt-2">
+          <button
+            type="button"
+            id="prevButton"
+            class="px-4 py-2 text-white font-medium bg-gradient-to-r from-red-500 to-orange-400 rounded-md shadow-md hover:from-orange-500 hover:to-red-500"
+          >
+            Previous
+          </button>
+          <span id="hostelNameDisplay" class="text-lg font-semibold text-gray-800">sri laxmi balaji</span>
+          <button
+            type="button"
+            id="nextButton"
+            class="px-4 py-2 text-white font-medium bg-gradient-to-r from-red-500 to-orange-400 rounded-md shadow-md hover:from-orange-500 hover:to-red-500"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      <!-- Number of Bottles -->
+      <div>
+        <label for="bottles" class="block text-sm font-semibold text-gray-700">Number of Bottles</label>
+        <input
+          type="number"
+          id="bottles"
+          name="bottles"
+          class="mt-2 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-orange-400 focus:outline-none text-gray-800 shadow-sm"
+          min="1"
+          placeholder="Enter number of bottles"
+          required
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="button"
+        id="saveButton"
+        class="w-full py-3 text-white font-medium bg-gradient-to-r from-red-500 to-orange-400 rounded-md shadow-md hover:from-orange-500 hover:to-red-500 focus:outline-none"
+      >
+        Save Data
+      </button>
+    </form>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden mt-6 p-4 bg-green-100 text-green-800 font-semibold rounded-md text-center">
+      Data saved successfully!
+    </div>
+  </div>
+
+  <script>
+    const hostels = [
+      "narayana school 1",
+      "narayana school 2",
+      "anantha college",
+    ];
+
+    let currentIndex = 0;
+    const hostelNameDisplay = document.getElementById("hostelNameDisplay");
+
+    // Set default hostel name
+    hostelNameDisplay.textContent = hostels[currentIndex];
+
+    // Set default date to today
+    document.getElementById("date").value = new Date().toISOString().split("T")[0];
+
+    // Add event listeners for Next and Previous buttons
+    document.getElementById("nextButton").addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % hostels.length;
+      hostelNameDisplay.textContent = hostels[currentIndex];
+      document.getElementById("date").value = new Date().toISOString().split("T")[0];
+    });
+
+    document.getElementById("prevButton").addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + hostels.length) % hostels.length;
+      hostelNameDisplay.textContent = hostels[currentIndex];
+      document.getElementById("date").value = new Date().toISOString().split("T")[0];
+    });
+
+    // Save data to local storage
+    document.getElementById("saveButton").addEventListener("click", () => {
+      const date = document.getElementById("date").value;
+      const hostelName = hostels[currentIndex];
+      const bottles = document.getElementById("bottles").value;
+
+      if (!date || !hostelName || !bottles) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      const requestData = {
+        date,
+        hostelName,
+        bottles: parseInt(bottles),
+      };
+
+      // Retrieve existing data from localStorage
+      const savedData = JSON.parse(localStorage.getItem("hostelSales")) || [];
+
+      // Add new entry
+      savedData.push(requestData);
+
+      // Save back to localStorage
+      localStorage.setItem("hostelSales", JSON.stringify(savedData));
+
+      // Show success message
+      document.getElementById("successMessage").classList.remove("hidden");
+
+      // Reset the form
+      document.getElementById("bottles").value = "";
+      document.getElementById("date").value = new Date().toISOString().split("T")[0];
+      currentIndex = 0;
+      hostelNameDisplay.textContent = hostels[currentIndex];
+    });
+  </script>
+</body>
+</html>

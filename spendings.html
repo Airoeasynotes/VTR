@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save Data Locally</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-500 to-orange-400 min-h-screen flex items-center justify-center font-sans text-gray-800">
+
+  <!-- Form Container -->
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">Spendings</h2>
+
+    <!-- Form -->
+    <form id="dataForm" class="space-y-5">
+      <!-- Date Selector -->
+      <div>
+        <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+        <input
+          type="date"
+          id="date"
+          name="date"
+          class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+          required
+        />
+      </div>
+
+      <!-- Spendings Type Selector -->
+      <div>
+        <label for="spendings" class="block text-sm font-medium text-gray-700">Spendings</label>
+        <select
+          id="spendings"
+          name="spendings"
+          class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+          required
+        >
+          <option value="" disabled selected>Select a spendings type</option>
+          <option value="diesel">Diesel</option>
+          <option value="bottles">Bottles</option>
+          <option value="others">Others</option>
+        </select>
+      </div>
+
+      <!-- Cost Input -->
+      <div>
+        <label for="cost" class="block text-sm font-medium text-gray-700">Enter Spendings</label>
+        <input
+          type="number"
+          id="cost"
+          name="cost"
+          class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+          min="1"
+          placeholder="Enter cost"
+          required
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="button"
+        id="saveButton"
+        class="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 rounded-md shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-orange-400"
+      >
+        Save Data
+      </button>
+    </form>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden mt-5 p-3 bg-green-100 text-green-800 rounded-md text-center">
+      Data saved successfully!
+    </div>
+  </div>
+
+  <script>
+    // Set default date to today
+    document.getElementById("date").value = new Date().toISOString().split("T")[0];
+
+    // Add event listener to the save button
+    document.getElementById("saveButton").addEventListener("click", function () {
+      // Collect form data
+      const date = document.getElementById("date").value;
+      const spendings = document.getElementById("spendings").value;
+      const cost = document.getElementById("cost").value;
+
+      if (!date || !spendings || !cost) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      // Prepare data object
+      const newData = {
+        date,
+        spendings,
+        cost: parseInt(cost),
+      };
+
+      // Retrieve existing data from local storage
+      const existingData = JSON.parse(localStorage.getItem("spendingsData")) || [];
+
+      // Add new data to the array
+      existingData.push(newData);
+
+      // Save updated data back to local storage
+      localStorage.setItem("spendingsData", JSON.stringify(existingData));
+
+      // Show success message
+      document.getElementById("successMessage").classList.remove("hidden");
+
+      // Reset form
+      document.getElementById("dataForm").reset();
+
+      // Set default date again
+      document.getElementById("date").value = new Date().toISOString().split("T")[0];
+    });
+  </script>
+</body>
+</html>
