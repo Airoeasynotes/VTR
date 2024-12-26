@@ -23,25 +23,30 @@
 
       <!-- Buttons for Actions -->
       <div class="flex justify-between space-x-4">
-        <!-- Export Button -->
-        <button id="exportButton" class="w-1/3 bg-blue-500 py-2 rounded-md text-white hover:bg-blue-400">
-          Export Data
-        </button>
-        
-        <!-- Import Button -->
-        <label for="importFile" class="w-1/3 bg-green-500 py-2 rounded-md text-white hover:bg-green-400 cursor-pointer">
-          Import Data
+        <button id="exportButton" class="w-1/4 bg-blue-500 py-2 rounded-md text-white hover:bg-blue-400">Export</button>
+        <label for="importFile" class="w-1/4 bg-green-500 py-2 rounded-md text-white hover:bg-green-400 cursor-pointer">
+          Import
           <input type="file" id="importFile" class="hidden" accept=".json"/>
         </label>
-        
-        <!-- Delete Button -->
-        <button id="deleteButton" class="w-1/3 bg-red-500 py-2 rounded-md text-white hover:bg-red-400">
-          Delete Data
-        </button>
+        <button id="deleteButton" class="w-1/4 bg-red-500 py-2 rounded-md text-white hover:bg-red-400">Delete</button>
+        <button id="editButton" class="w-1/4 bg-yellow-500 py-2 rounded-md text-white hover:bg-yellow-400">Edit</button>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+      <div class="bg-white rounded-lg w-96 p-6">
+        <h3 class="text-lg font-bold text-black mb-4">Edit Data</h3>
+        <textarea id="editTextarea" class="w-full h-40 p-2 border rounded-md bg-black text-white"></textarea>
+        <div class="flex justify-between mt-4">
+          <button id="saveButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-400">Save</button>
+          <button id="cancelButton" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-400">Cancel</button>
+        </div>
       </div>
     </div>
   </main>
 
+  <!-- Scripts -->
   <script>
     // Fetch and display data from localStorage
     function fetchData() {
@@ -49,28 +54,14 @@
       const tripData = JSON.parse(localStorage.getItem("tripData")) || [];
       const spendingsData = JSON.parse(localStorage.getItem("spendingsData")) || [];
 
-      const displayData = {
-        hostelSales: hostelData,
-        tripData: tripData,
-        spendingsData: spendingsData
-      };
-
+      const displayData = { hostelSales: hostelData, tripData: tripData, spendingsData: spendingsData };
       document.getElementById("dataDisplay").textContent = JSON.stringify(displayData, null, 2);
     }
 
-    // Export data to a JSON file
+    // Export data to JSON file
     document.getElementById("exportButton").addEventListener("click", function() {
-      const hostelData = JSON.parse(localStorage.getItem("hostelSales")) || [];
-      const tripData = JSON.parse(localStorage.getItem("tripData")) || [];
-      const spendingsData = JSON.parse(localStorage.getItem("spendingsData")) || [];
-
-      const data = {
-        hostelSales: hostelData,
-        tripData: tripData,
-        spendingsData: spendingsData
-      };
-
-      const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      const data = document.getElementById("dataDisplay").textContent;
+      const blob = new Blob([data], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -79,41 +70,64 @@
       URL.revokeObjectURL(url);
     });
 
-    // Import data from a JSON file
+    // Import data from JSON file
     document.getElementById("importFile").addEventListener("change", function(event) {
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const data = JSON.parse(e.target.result);
-          
-          // Save data in localStorage under respective categories
-          localStorage.setItem("hostelSales", JSON.stringify(data.hostelSales || []));
-          localStorage.setItem("tripData", JSON.stringify(data.tripData || []));
-          localStorage.setItem("spendingsData", JSON.stringify(data.spendingsData || []));
-
-          alert("Data Imported Successfully!");
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          localStorage.setItem("hostelSales", JSON.stringify(importedData.hostelSales || []));
+          localStorage.setItem("tripData", JSON.stringify(importedData.tripData || []));
+          localStorage.setItem("spendingsData", JSON.stringify(importedData.spendingsData || []));
+          alert("Data imported successfully!");
           fetchData();
-        };
-        reader.readAsText(file);
+        } catch (error) {
+          alert("Invalid JSON format in the imported file.");
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Delete all data
+    document.getElementById("deleteButton").addEventListener("click", function() {
+      if (confirm("Are you sure you want to delete all data?")) {
+        localStorage.clear();
+        fetchData();
       }
     });
 
-    // Delete all data from localStorage
-    document.getElementById("deleteButton").addEventListener("click", function() {
-      if (confirm("Are you sure you want to delete all data? This action cannot be undone.")) {
-        localStorage.removeItem("hostelSales");
-        localStorage.removeItem("tripData");
-        localStorage.removeItem("spendingsData");
+    // Show Edit Modal
+    document.getElementById("editButton").addEventListener("click", function() {
+      const data = document.getElementById("dataDisplay").textContent;
+      document.getElementById("editTextarea").value = data;
+      document.getElementById("editModal").classList.remove("hidden");
+    });
 
-        alert("All data has been deleted.");
+    // Save Edited Data
+    document.getElementById("saveButton").addEventListener("click", function() {
+      try {
+        const updatedData = JSON.parse(document.getElementById("editTextarea").value);
+
+        localStorage.setItem("hostelSales", JSON.stringify(updatedData.hostelSales || []));
+        localStorage.setItem("tripData", JSON.stringify(updatedData.tripData || []));
+        localStorage.setItem("spendingsData", JSON.stringify(updatedData.spendingsData || []));
+
+        alert("Data updated successfully!");
+        document.getElementById("editModal").classList.add("hidden");
         fetchData();
+      } catch (error) {
+        alert("Invalid JSON format. Please correct and try again.");
       }
+    });
+
+    // Cancel Editing
+    document.getElementById("cancelButton").addEventListener("click", function() {
+      document.getElementById("editModal").classList.add("hidden");
     });
 
     // Initial fetch and display of data
     fetchData();
   </script>
-
 </body>
-</html>
+  </html>
