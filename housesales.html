@@ -118,7 +118,7 @@
     // Save data
     document.getElementById("saveButton").addEventListener("click", () => {
       const date = document.getElementById("date").value;
-      const hostelName = hostels[currentIndex];
+      const hostel = hostels[currentIndex];
       const bottles = document.getElementById("bottles").value;
 
       if (!date || !bottles) {
@@ -128,7 +128,7 @@
 
       const requestData = {
         date,
-        hostelName,
+        hostel,
         bottles: parseInt(bottles),
       };
 
