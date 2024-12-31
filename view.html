@@ -23,7 +23,7 @@
           class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
           required
         >
-          
+          <option value="" disabled selected>Select a Hostel</option>
           <option value="" disabled selected>Select a Hostel</option>
 <option value="Sri Laxmi Balaji">Sri Laxmi Balaji</option>
 <option value="KMR Deluxe">KMR Deluxe</option>
@@ -75,7 +75,7 @@
   <script>
     document.getElementById("viewButton").addEventListener("click", function () {
       // Get selected hostel name
-      const hostelName = document.getElementById("hostelName").value;
+      const hostel = document.getElementById("hostelName").value;
 
       if (!hostelName) {
         alert("Please select a hostel.");
