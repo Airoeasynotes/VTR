@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Bottles Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-600 via-orange-500 to-yellow-400 text-white font-sans">
+
+  <!-- Page Header -->
+  <header class="text-center py-6 bg-white bg-opacity-10 shadow-md">
+    <h1 class="text-3xl font-extrabold text-white">Hostel Bottles Table</h1>
+  </header>
+
+  <!-- Data Table Section -->
+  <main class="p-6 flex flex-col items-center">
+    <div class="w-full max-w-4xl mt-8">
+      <h2 class="text-lg font-medium text-white mb-4">Hostel Bottles Data</h2>
+      <div id="tableContainer" class="bg-gray-800 p-4 rounded-md text-white overflow-auto">
+        <!-- Table will be inserted here -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Fetch hostel sales data from localStorage
+    function fetchHostelData() {
+      return JSON.parse(localStorage.getItem("hostelSales")) || [];
+    }
+
+    // Generate table with total bottles for each hostel
+    function generateHostelTable() {
+      const hostelData = fetchHostelData();
+
+      if (hostelData.length === 0) {
+        // Display message if no data exists
+        const tableContainer = document.getElementById("tableContainer");
+        tableContainer.innerHTML = "<p class='text-center text-lg text-gray-400'>No hostel data available.</p>";
+        return;
+      }
+
+      // Calculate total bottles for each hostel
+      const totals = hostelData.reduce((acc, entry) => {
+        acc[entry.hostel] = (acc[entry.hostel] || 0) + entry.bottles;
+        return acc;
+      }, {});
+
+      const tableContainer = document.getElementById("tableContainer");
+      tableContainer.innerHTML = "";
+
+      // Create table
+      const table = document.createElement("table");
+      table.classList.add("table-auto", "w-full", "text-left", "border-collapse", "border", "border-gray-700");
+
+      // Table header
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      ["Hostel", "Total Bottles"].forEach((header) => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        th.classList.add("border", "border-gray-700", "px-4", "py-2", "font-semibold");
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      // Table body
+      const tbody = document.createElement("tbody");
+      Object.entries(totals).forEach(([hostel, totalBottles]) => {
+        const row = document.createElement("tr");
+
+        const hostelCell = document.createElement("td");
+        hostelCell.textContent = hostel;
+        hostelCell.classList.add("border", "border-gray-700", "px-4", "py-2");
+        row.appendChild(hostelCell);
+
+        const totalCell = document.createElement("td");
+        totalCell.textContent = totalBottles;
+        totalCell.classList.add("border", "border-gray-700", "px-4", "py-2", "text-center");
+        row.appendChild(totalCell);
+
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(tbody);
+      tableContainer.appendChild(table);
+    }
+
+    // Generate table on page load
+    generateHostelTable();
+  </script>
+
+</body>
+</html>
