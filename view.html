@@ -23,22 +23,23 @@
           class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500"
           required
         >
+          
           <option value="" disabled selected>Select a Hostel</option>
-          <option value="sri laxmi balaji">Sri Laxmi Balaji</option>
-          <option value="KMR deluxe">KMR Deluxe</option>
-          <option value="Honey">Honey</option>
-          <option value="Gangotri">Gangotri</option>
-          <option value="Nest inn">Nest Inn</option>
-          <option value="siri(babai hostel)">Siri (Babai Hostel)</option>
-          <option value="srinivasa 1">Srinivasa 1</option>
-          <option value="hari kranthi">Hari Kranthi</option>
-          <option value="Bhavani">Bhavani</option>
-          <option value="Srinivasa 2">Srinivasa 2</option>
-          <option value="SR Reddy's">SR Reddy's</option>
-          <option value="Ganesh">Ganesh</option>
-          <option value="classic">Classic</option>
-          <option value="tirumala">Tirumala</option>
-          <option value="outside sales">Outside Sales</option>
+<option value="Sri Laxmi Balaji">Sri Laxmi Balaji</option>
+<option value="KMR Deluxe">KMR Deluxe</option>
+<option value="Honey">Honey</option>
+<option value="Gangotri">Gangotri</option>
+<option value="Nest Inn">Nest Inn</option>
+<option value="Siri (Babai Hostel)">Siri (Babai Hostel)</option>
+<option value="Srinivasa 1">Srinivasa 1</option>
+<option value="Hari Kranthi">Hari Kranthi</option>
+<option value="Bhavani">Bhavani</option>
+<option value="Srinivasa 2">Srinivasa 2</option>
+<option value="SR Reddy's">SR Reddy's</option>
+<option value="Ganesh">Ganesh</option>
+<option value="Classic">Classic</option>
+<option value="Tirumala">Tirumala</option>
+<option value="Outside Sales">Outside Sales</option>
         </select>
       </div>
 
@@ -85,7 +86,7 @@
       const savedData = JSON.parse(localStorage.getItem("hostelSales")) || [];
 
       // Filter data for the selected hostel
-      const filteredData = savedData.filter(item => item.hostelName === hostelName);
+      const filteredData = savedData.filter(item => item.hostel === hostel);
 
       const dataSection = document.getElementById("dataSection");
       const errorMessage = document.getElementById("errorMessage");
