@@ -77,21 +77,9 @@
 
   <script>
     const hostels = [
-      "sri laxmi balaji",
-      "KMR deluxe",
-      "Honey",
-      "Gangotri",
-      "Nest inn",
-      "siri(babai hostel)",
-      "srinivasa 1",
-      "hari kranthi",
-      "Bhavani",
-      "Srinivasa 2",
-      "SR Reddy's",
-      "Ganesh",
-      "classic",
-      "tirumala",
-      "outside sales"
+       "Sri Laxmi Balaji", "KMR Deluxe", "Honey", "Gangotri", "Nest Inn",
+      "Siri (Babai Hostel)", "Srinivasa 1", "Hari Kranthi", "Bhavani",
+      "Srinivasa 2", "SR Reddy's", "Ganesh", "Classic", "Tirumala", "Outside Sales",
     ];
 
     let currentIndex = 0;
@@ -115,7 +103,7 @@
     // Save data to local storage
     document.getElementById("saveButton").addEventListener("click", () => {
       const date = document.getElementById("date").value;
-      const hostelName = hostels[currentIndex];
+      const hostel = hostels[currentIndex];
       const bottles = document.getElementById("bottles").value;
 
       if (!date || !bottles) {
@@ -125,7 +113,7 @@
 
       const requestData = {
         date,
-        hostelName,
+        hostel,
         bottles: parseInt(bottles),
       };
 
